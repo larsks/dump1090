@@ -1,0 +1,19 @@
+The build instructions in README.md suggest building the bladeRF
+packages from source, but the result is incompatible with the dump1090
+code and results in the following error:
+
+    cc -Wdate-time -D_FORTIFY_SOURCE=2 -DMODES_DUMP1090_VERSION=\"3.6.2\" -DMODES_DUMP1090_VARIANT=\"dump1090-fa\" -DENABLE_RTLSDR -DENABLE_BLADERF -g -O2 -fdebug-prefix-map=/src/dump1090=. -fstack-protector-strong -Wformat -Werror=format-security -std=c11 -O2 -g -Wall -Werror -W -D_DEFAULT_SOURCE -I/usr/include/ -I/usr/include/ -c sdr_bladerf.c -o sdr_bladerf.o
+    sdr_bladerf.c: In function 'show_config':
+    sdr_bladerf.c:116:76: error: passing argument 3 of 'bladerf_get_frequency' from incompatible pointer type [-Werror=incompatible-pointer-types]
+             (status = bladerf_get_frequency(BladeRF.device, BLADERF_MODULE_RX, &freq)) < 0 ||
+                                                                                ^
+    In file included from sdr_bladerf.c:23:0:
+    /usr/include/libbladeRF.h:1117:15: note: expected 'bladerf_frequency * {aka long unsigned int *}' but argument is of type 'unsigned int *'
+     int CALL_CONV bladerf_get_frequency(struct bladerf *dev,
+                   ^~~~~~~~~~~~~~~~~~~~~
+    cc1: all warnings being treated as errors
+    make[2]: *** [sdr_bladerf.o] Error 1
+    Makefile:41: recipe for target 'sdr_bladerf.o' failed
+
+This was using the bladerf sources from
+4bcdd6ec53c71d875eaae56e5a2ed3458a1b695b.
